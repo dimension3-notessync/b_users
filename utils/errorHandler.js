@@ -41,6 +41,10 @@ export default function errorHandler(req, res, error, action) {
             console.error("Error while trying to update a permissionLevel:", error.response.data);
             return res.status(error.response.status).send({ message: `Error updating the permissionLevel: ${errorMessage}` });
         }
+        if (failedStep === 'requestPasswordChange') {
+            console.error("Error while trying to update a password:", error.response.data);
+            return res.status(error.response.status).send({ message: `Error updating the password: ${errorMessage}` });
+        }
     }
 
     // handle no response

@@ -25,7 +25,7 @@ export default async function permissionChangeHandler(req, res, usersDB, tokenPo
         stepName : "adminCheck"
     })
         .then((adminCheckResponse) => {
-            return axios.put(`http://localhost:${usersDB}/permissionLevel`, { //TODO FIX IN LIVE VERSION
+            return axios.put(`http://localhost:${usersDB}/change/permissionLevel`, { //TODO FIX IN LIVE VERSION
                 username : username,
                 permissionLevel : permissionLevel
             }, {
