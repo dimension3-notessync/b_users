@@ -61,7 +61,9 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
             console.log("User named: >" + username + "< has been registered.");
             let role;
             if (registrationResponse.data.permissionLevel === 2) {
-                role = "student"
+                role = "student";
+            } else if (registrationResponse.data.permissionLevel===3) {
+                role = "admin";
             } else {
                 role = "viewer";
             }

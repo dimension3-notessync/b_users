@@ -15,12 +15,15 @@ export default async function permissionChangeHandler(req, res, usersDB, tokenPo
     if (!req.body.permissionLevel) {
         return res.status(400).send({ message: "permissionLevel is missing" });
     }
+    if (permissionLevel > 3 || permissionLevel < 1) {
+        return res.status(400).send({ message: "permissionLevel currently only allows 1, 2 or 3" });
+    }
     const username = req.body.username;
     const permissionLevel = req.body.permissionLevel;
 
     axios.post(`http://localhost:${tokenPort}/permissionLevel`, { //TODO FIX IN LIVE VERSION
         token: token,
-        allowedRoles: "admin"
+        allowedRoles: ["admin"]
     }, {
         stepName : "adminCheck"
     })
@@ -33,7 +36,7 @@ export default async function permissionChangeHandler(req, res, usersDB, tokenPo
             })
         })
         .then((usersDBresponse) => {
-            return res.send(200).send({users: usersDBresponse.data});
+            return res.status(200).send({users: usersDBresponse.data});
         })
         .catch(error => {
             return errorHandler(req, res, error)

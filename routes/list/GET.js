@@ -9,7 +9,7 @@ export default async function listHandler(req, res) {
 
     axios.post(`http://localhost:${tokenPort}/permissionLevel`, { //TODO FIX IN LIVE VERSION
         token: token,
-        allowedRoles: "admin"
+        allowedRoles: ["admin"]
     }, {
         stepName : "adminCheck"
     })
@@ -19,7 +19,7 @@ export default async function listHandler(req, res) {
             })
         })
         .then((usersDBresponse) => {
-            return res.send(200).send({users: usersDBresponse.data});
+            return res.status(200).send({users: usersDBresponse.data});
         })
         .catch(error => {
             return errorHandler(req, res, error)
