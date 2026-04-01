@@ -22,6 +22,6 @@ export default async function listHandler(req, res) {
             return res.send(200).send({users: usersDBresponse.data});
         })
         .catch(error => {
-            errorHandler(req, res, error)
+            return errorHandler(req, res, error)
         });
 }

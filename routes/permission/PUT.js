@@ -36,6 +36,6 @@ export default async function permissionChangeHandler(req, res, usersDB, tokenPo
             return res.send(200).send({users: usersDBresponse.data});
         })
         .catch(error => {
-            errorHandler(req, res, error)
+            return errorHandler(req, res, error)
         });
 }

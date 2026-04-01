@@ -17,7 +17,6 @@ export default async function passwordChangeHandler(req, res, usersDB, tokenPort
     }
     const password = req.body.password;
     const newPassword = req.body.newPassword;
-    console.log(newPassword)
     let username;
 
     axios.get(`http://localhost:${tokenPort}/user/${token}`, { //TODO FIX IN LIVE VERSION
@@ -41,9 +40,9 @@ export default async function passwordChangeHandler(req, res, usersDB, tokenPort
             })
         })
         .then((usersDBresponse) => {
-            return res.send(200).send({message : "Password successfully changed."});
+            return res.status(200).send({message : "Password successfully changed."});
         })
         .catch(error => {
-            errorHandler(req, res, error)
+            return errorHandler(req, res, error)
         });
 }

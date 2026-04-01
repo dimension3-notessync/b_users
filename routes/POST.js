@@ -84,7 +84,7 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
             });
         })
         .catch(error => {
-            errorHandler(req, res, error);
+            return errorHandler(req, res, error);
         });
 
 }

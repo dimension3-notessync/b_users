@@ -36,6 +36,6 @@ export default async function deleteHandler(req, res, usersDB, tokenPort) {
             return res.status(200).send({message : "account successfully deleted"});
         })
         .catch(error => {
-            errorHandler(req, res, error)
+            return errorHandler(req, res, error)
     });
 }

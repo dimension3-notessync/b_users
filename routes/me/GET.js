@@ -30,6 +30,6 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
             return res.status(200).send({ username: username, email: email, subscriptions: subscriptionsDBresponse.data});
         })
         .catch(error => {
-            errorHandler(req, res, error);
+            return errorHandler(req, res, error);
         });
 }
