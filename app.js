@@ -5,6 +5,7 @@ import createHandler from "./routes/POST.js";
 import deleteHandler from "./routes/DELETE.js";
 import profileHandler from "./routes/me/GET.js";
 import listHandler from "./routes/list/GET.js";
+import permissionChangeHandler from "./routes/permission/PUT.js";
 
 const port = process.env.PORT || 4600;
 const usersDB = process.env.USERS_DB_PORT || 11300;
@@ -66,7 +67,7 @@ router.get('/list', async (req, res) => {
 
 // admin changes permissionLevel of an user
 router.put('/permission', async (req, res) => {
-    return res.status(404).send('We are sorry, this feature has not been implemented yet.');
+    permissionChangeHandler(req, res, usersDB, tokenPort)
 })
 
 

@@ -37,6 +37,10 @@ export default function errorHandler(req, res, error, action) {
             console.error("Error while trying to get all users:", error.response.data);
             return res.status(error.response.status).send({ message: `Error requesting the information of all users: ${errorMessage}` });
         }
+        if (failedStep === 'requestPermissionLevelChange') {
+            console.error("Error while trying to update a permissionLevel:", error.response.data);
+            return res.status(error.response.status).send({ message: `Error updating the permissionLevel: ${errorMessage}` });
+        }
     }
 
     // handle no response
