@@ -4,17 +4,23 @@ import cookieParser from 'cookie-parser'
 import createHandler from "./routes/POST.js";
 import deleteHandler from "./routes/DELETE.js";
 import profileHandler from "./routes/me/GET.js";
+import listHandler from "./routes/list/GET.js";
 
 const port = process.env.PORT || 4600;
-const databasePort = process.env.DATABASE_PORT || 11300;
+const usersDB = process.env.USERS_DB_PORT || 11300;
+const subscriptionsDB = process.env.SUBSCRIPTIONS_DB_PORT || 11200;
 const tokenPort = process.env.TOKEN_PORT || 11000;
 
 if (!port) {
     console.error("Critical Error: Missing PORT environment variable. Please set it.");
     process.exit(1);
 }
-if (!databasePort) {
-    console.error("Critical Error: Missing databasePort environment variable. Please set it.");
+if (!usersDB) {
+    console.error("Critical Error: Missing usersdb port environment variable. Please set it.");
+    process.exit(1);
+}
+if (!subscriptionsDB) {
+    console.error("Critical Error: Missing subscriptionsdb port environment variable. Please set it.");
     process.exit(1);
 }
 if (!tokenPort) {
@@ -30,11 +36,11 @@ const router = express.Router();
 
 // create user
 router.post('/', async (req, res) => {
-    createHandler(req, res, databasePort, tokenPort);
+    createHandler(req, res, usersDB, tokenPort);
 });
 // delete user
 router.delete('/', async (req, res) => {
-    deleteHandler(req, res, databasePort, tokenPort);
+    deleteHandler(req, res, usersDB, tokenPort);
 })
 
 
@@ -50,11 +56,11 @@ router.get('/create/apple', async (req, res) => {
 
 // get own profile information
 router.get('/me', async (req, res) => {
-    profileHandler(req, res, databasePort, tokenPort);
+    profileHandler(req, res, usersDB, tokenPort, subscriptionsDB);
 })
 // admin gets a list of all users
 router.get('/list', async (req, res) => {
-    return res.status(404).send('We are sorry, this feature has not been implemented yet.');
+    listHandler(req, res);
 })
 
 
@@ -82,7 +88,7 @@ router.put('/password-reset/change/:token', async (req, res) => {
 })
 
 
-app.use('/api/users', router);
+app.use('/', router);
 
 app.listen(port, () => {
     console.log(`users-backend running on port ${port}`);

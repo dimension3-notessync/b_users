@@ -1,6 +1,7 @@
 
 import axios from 'axios';
 import validator from 'validator';
+import errorHandler from "../utils/errorHandler.js";
 
 export default async function createHandler(req, res, databasePort, tokenPort) {
     if (!req.body) {
@@ -49,10 +50,12 @@ export default async function createHandler(req, res, databasePort, tokenPort) {
     }
 
 
-    axios.post(`http://localhost:${databasePort}/register`, { //TODO FIX IN LIVE VERSION
+    axios.post(`http://localhost:${usersDB}/register`, { //TODO FIX IN LIVE VERSION
         username: username,
         password: password,
         email: email,
+    }, {
+        stepName : "registerUser"
     })
         .then((registrationResponse) => {
             console.log("User named: >" + username + "< has been registered.");
@@ -65,6 +68,8 @@ export default async function createHandler(req, res, databasePort, tokenPort) {
             return axios.post(`http://localhost:${tokenPort}`, { //TODO FIX IN LIVE VERSION
                 username: username,
                 role: role
+            },{
+                stepName: "requestToken"
             });
         })
         .then((followUpResponse) => {
@@ -79,37 +84,7 @@ export default async function createHandler(req, res, databasePort, tokenPort) {
             });
         })
         .catch(error => {
-
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                // that falls out of the range of 2xx.
-                const errorMessage = error.response.data?.message || "An unexpected error occurred on the server.";
-
-                // Differentiate errors based on the URL of the failing request
-                if (error.config.url.includes('/register')) {
-                    console.error("Error during user registration for: " + req.body.username, error.response.data);
-                    return res.status(error.response.status).send({
-                        message: `Registration failed: ${errorMessage}`
-                    });
-                } else if (error.config.url.includes('/')) {
-                    console.error("Error during follow-up action (e.g., profile creation) for: " + req.body.username, error.response.data);
-                    // Important consideration: If registration succeeded but profile creation failed,
-                    // the user *is* registered. You might want to return a 500
-                    // to indicate a partial success/failure state, or provide a specific
-                    // message. For now, it will return the status the profile endpoint sent.
-                    return res.status(error.response.status).send({
-                        message: `Follow-up action failed after successful registration: ${errorMessage}. User might still be registered.`
-                    });
-                }
-            } else if (error.request) {
-                // The request was made but no response was received (e.g., network error, server down)
-                console.error("No response received from Axios call:", error.request);
-                return res.status(500).send({ message: "Network error or database service is unavailable." });
-            } else {
-                // Something happened in setting up the request that triggered an Error
-                console.error("Error setting up Axios request:", error.message);
-                return res.status(500).send({ message: "An unexpected client-side error occurred while making a request." });
-            }
+            errorHandler(req, res, error);
         });
 
 }
