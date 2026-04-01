@@ -3,7 +3,7 @@ import axios from 'axios';
 import validator from 'validator';
 import errorHandler from "../utils/errorHandler.js";
 
-export default async function createHandler(req, res, databasePort, tokenPort) {
+export default async function createHandler(req, res, usersDB, tokenPort) {
     if (!req.body) {
         return res.status(400).send({ message: "Request body is missing" });
     }
