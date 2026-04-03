@@ -8,24 +8,24 @@ import listHandler from "./routes/list/GET.js";
 import permissionChangeHandler from "./routes/permission/PUT.js";
 import passwordChangeHandler from "./routes/password-change/PUT.js";
 
-const port = process.env.PORT || 4600;
-const usersDB = process.env.USERS_DB_PORT || 11300;
-const subscriptionsDB = process.env.SUBSCRIPTIONS_DB_PORT || 11200;
-const tokenPort = process.env.TOKEN_PORT || 11000;
+const port = process.env.PORT || "undefined";
+const usersDB = process.env.USERS_DB_PORT || "undefined";
+const subscriptionsDB = process.env.SUBSCRIPTIONS_DB_PORT || "undefined";
+const tokenPort = process.env.TOKEN_PORT || "undefined";
 
-if (!port) {
+if (port === "undefined") {
     console.error("Critical Error: Missing PORT environment variable. Please set it.");
     process.exit(1);
 }
-if (!usersDB) {
-    console.error("Critical Error: Missing usersdb port environment variable. Please set it.");
+if (usersDB=== "undefined") {
+    console.error("Critical Error: Missing usersDB port environment variable. Please set it.");
     process.exit(1);
 }
-if (!subscriptionsDB) {
-    console.error("Critical Error: Missing subscriptionsdb port environment variable. Please set it.");
+if (subscriptionsDB === "undefined") {
+    console.error("Critical Error: Missing subscriptionsDB port environment variable. Please set it.");
     process.exit(1);
 }
-if (!tokenPort) {
+if (tokenPort === "undefined") {
     console.error("Critical Error: Missing tokenPort environment variable. Please set it.");
     process.exit(1);
 }
