@@ -11,31 +11,29 @@ export default async function deleteHandler(req, res, usersDB, tokenPort) {
     const password = req.body.password;
     const token = req.cookies.token;
     if (!token) {
-        return res.status(400).send({ message: "Token is missing" });
+        return res.status(400).send({ message: "Token is missing, please login" });
     }
-    let username;
-    axios.get(`http://${tokenPort}/user/${token}`, {
-        stepName: "requestUsernameByToken"
-    })
-        .then((usernameFromTokenResponse) => {
-            username = usernameFromTokenResponse.data.username;
-            return axios.post(`http://${usersDB}/login`, {
-                username: username,
-                password: password
-            }, {
-                stepName : "validatePassword"
-            });
-        })
-        .then((loginResponse) => {
-            return axios.delete(`http://:${usersDB}/delete/${username}`, {
-                stepName : "validatePassword"
-            });
-        })
-        .then((deleteResponse) => {
-            res.clearCookie('token');
-            return res.status(200).send({message : "account successfully deleted"});
-        })
-        .catch(error => {
-            return errorHandler(req, res, error)
-    });
+
+    try {
+        const usernameFromTokenResponse = await axios.get(`http://${tokenPort}/user/${token}`, {
+            stepName: "requestUsernameByToken"
+        });
+        const username = usernameFromTokenResponse.data.username;
+
+        await axios.post(`http://${usersDB}/login`, {
+            username: username,
+            password: password
+        }, {
+            stepName: "validatePassword"
+        });
+
+        await axios.delete(`http://${usersDB}/delete/${username}`, {
+            stepName: "deleteUser" // Changed stepName to be more descriptive
+        });
+
+        res.clearCookie('token');
+        return res.status(200).send({ message: "account successfully deleted" });
+    } catch (error) {
+        return errorHandler(req, res, error);
+    }
 }
