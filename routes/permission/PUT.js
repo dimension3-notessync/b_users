@@ -21,24 +21,24 @@ export default async function permissionChangeHandler(req, res, usersDB, tokenPo
     }
     const username = req.body.username;
 
-    axios.post(`http://${tokenPort}/permissionLevel`, {
-        token: token,
-        allowedRoles: ["admin"]
-    }, {
-        stepName : "adminCheck"
-    })
-        .then((adminCheckResponse) => {
-            return axios.put(`http://${usersDB}/change/permissionLevel`, {
-                username : username,
-                permissionLevel : permissionLevel
-            }, {
-                stepName : "requestPermissionLevelChange"
-            })
-        })
-        .then((usersDBresponse) => {
-            return res.status(200).send({users: usersDBresponse.data});
-        })
-        .catch(error => {
-            return errorHandler(req, res, error)
+    try {
+        await axios.post(`http://${tokenPort}/permissionLevel`, {
+            token: token,
+            allowedRoles: ["admin"]
+        }, {
+            stepName : "adminCheck"
         });
+
+        const usersDBResponse = await axios.put(`http://${usersDB}/change/permissionLevel`, {
+            username : username,
+            permissionLevel : permissionLevel
+        }, {
+            stepName : "requestPermissionLevelChange"
+        });
+
+        return res.status(200).send({message : usersDBResponse.data.message });
+
+    } catch (error) {
+        return errorHandler(req, res, error);
+    }
 }
