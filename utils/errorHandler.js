@@ -45,6 +45,10 @@ export default function errorHandler(req, res, error, action) {
             console.error("Error while trying to update a password:", error.response.data);
             return res.status(error.response.status).send({ message: `Error updating the password: ${errorMessage}` });
         }
+        if (failedStep === 'deleteUser') {
+            console.error("Error while trying to delete the user:", error.response.data);
+            return res.status(error.response.status).send({ message: `Error while trying to delete the account: ${errorMessage}` });
+        }
     }
 
     // handle no response
