@@ -62,7 +62,7 @@ router.get('/me', async (req, res) => {
 })
 // admin gets a list of all users
 router.get('/list', async (req, res) => {
-    listHandler(req, res);
+    listHandler(req, res, tokenPort, usersDB);
 })
 
 
