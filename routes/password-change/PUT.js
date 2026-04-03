@@ -17,32 +17,29 @@ export default async function passwordChangeHandler(req, res, usersDB, tokenPort
     }
     const password = req.body.password;
     const newPassword = req.body.newPassword;
-    let username;
 
-    axios.get(`http://${tokenPort}/user/${token}`, {
-        stepName : "requestUsernameByToken"
-    })
-        .then((usernameFromTokenResponse) => {
-            username = usernameFromTokenResponse.data.username;
-            return axios.post(`http://${usersDB}/login`, {
-                username: username,
-                password: password
-            }, {
-                stepName : "validatePassword"
-            });
-        })
-        .then((loginResponse) => {
-            return axios.put(`http://${usersDB}/change/password`, {
-                username : username,
-                newPassword : newPassword
-            }, {
-                stepName : "requestPasswordChange"
-            })
-        })
-        .then((usersDBresponse) => {
-            return res.status(200).send({message : "Password successfully changed."});
-        })
-        .catch(error => {
-            return errorHandler(req, res, error)
+    try {
+        const usernameFromTokenResponse = await axios.get(`http://${tokenPort}/user/${token}`, {
+            stepName : "requestUsernameByToken"
         });
+        const username = usernameFromTokenResponse.data.username;
+
+        await axios.post(`http://${usersDB}/login`, {
+            username: username,
+            password: password
+        }, {
+            stepName : "validatePassword"
+        });
+
+        await axios.put(`http://${usersDB}/change/password`, {
+            username : username,
+            newPassword : newPassword
+        }, {
+            stepName : "requestPasswordChange"
+        });
+
+        return res.status(200).send({message : "Password successfully changed."});
+    } catch (error) {
+        return errorHandler(req, res, error);
+    }
 }
