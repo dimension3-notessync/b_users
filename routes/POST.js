@@ -50,7 +50,7 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
     }
 
 
-    axios.post(`http://localhost:${usersDB}/register`, { //TODO FIX IN LIVE VERSION
+    axios.post(`http://${usersDB}/register`, {
         username: username,
         password: password,
         email: email,
@@ -67,7 +67,7 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
             } else {
                 role = "viewer";
             }
-            return axios.post(`http://localhost:${tokenPort}`, { //TODO FIX IN LIVE VERSION
+            return axios.post(`http://${tokenPort}`, {
                 username: username,
                 role: role
             },{
@@ -88,5 +88,4 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
         .catch(error => {
             return errorHandler(req, res, error);
         });
-
 }

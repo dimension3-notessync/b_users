@@ -9,12 +9,12 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
     let username;
     let email;
 
-    axios.get(`http://localhost:${tokenPort}/user/${token}`, { //TODO FIX IN LIVE VERSION
+    axios.get(`http://${tokenPort}/user/${token}`, {
         stepName : "requestUsernameByToken"
     })
         .then((usernameFromTokenResponse) => {
             username = usernameFromTokenResponse.data.username;
-            return axios.post(`http://localhost:${usersDB}/user`, { //TODO FIX IN LIVE VERSION
+            return axios.post(`http://${usersDB}/user`, {
                 username: username
             }, {
                 stepName : "requestUserInformation"
@@ -22,7 +22,7 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
         })
         .then((usersDBresponse) => {
             email = usersDBresponse.data.email;
-            return axios.get(`http://localhost:${subscriptionsDB}/user/${usersDBresponse.data.id}`, { //TODO FIX IN LIVE VERSION
+            return axios.get(`http://${subscriptionsDB}/user/${usersDBresponse.data.id}`, {
                 stepName : "requestSubscriptionsOfUser"
             })
         })

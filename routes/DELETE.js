@@ -14,12 +14,12 @@ export default async function deleteHandler(req, res, usersDB, tokenPort) {
         return res.status(400).send({ message: "Token is missing" });
     }
     let username;
-    axios.get(`http://localhost:${tokenPort}/user/${token}`, {
+    axios.get(`http://${tokenPort}/user/${token}`, {
         stepName: "requestUsernameByToken"
     })
         .then((usernameFromTokenResponse) => {
             username = usernameFromTokenResponse.data.username;
-            return axios.post(`http://localhost:${usersDB}/login`, { //TODO FIX IN LIVE VERSION
+            return axios.post(`http://${usersDB}/login`, {
                 username: username,
                 password: password
             }, {
@@ -27,9 +27,9 @@ export default async function deleteHandler(req, res, usersDB, tokenPort) {
             });
         })
         .then((loginResponse) => {
-            return axios.delete(`http://localhost:${usersDB}/delete/${username}`, {
+            return axios.delete(`http://:${usersDB}/delete/${username}`, {
                 stepName : "validatePassword"
-            });//TODO FIX IN LIVE VERSION
+            });
         })
         .then((deleteResponse) => {
             res.clearCookie('token');

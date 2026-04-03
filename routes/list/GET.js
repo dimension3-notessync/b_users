@@ -7,14 +7,14 @@ export default async function listHandler(req, res) {
         return res.status(400).send({ message: "Token is missing" });
     }
 
-    axios.post(`http://localhost:${tokenPort}/permissionLevel`, { //TODO FIX IN LIVE VERSION
+    axios.post(`http://${tokenPort}/permissionLevel`, {
         token: token,
         allowedRoles: ["admin"]
     }, {
         stepName : "adminCheck"
     })
         .then((adminCheckResponse) => {
-            return axios.get(`http://localhost:${usersDB}/all`, { //TODO FIX IN LIVE VERSION
+            return axios.get(`http://${usersDB}/all`, {
                 stepName : "requestAllUsers"
             })
         })
