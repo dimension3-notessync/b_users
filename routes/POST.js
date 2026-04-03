@@ -49,43 +49,44 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
         return res.status(400).send({ message: "email format is invalid" });
     }
 
-
-    axios.post(`http://${usersDB}/register`, {
-        username: username,
-        password: password,
-        email: email,
-    }, {
-        stepName : "registerUser"
-    })
-        .then((registrationResponse) => {
-            console.log("User named: >" + username + "< has been registered.");
-            let role;
-            if (registrationResponse.data.permissionLevel === 2) {
-                role = "student";
-            } else if (registrationResponse.data.permissionLevel===3) {
-                role = "admin";
-            } else {
-                role = "viewer";
-            }
-            return axios.post(`http://${tokenPort}`, {
-                username: username,
-                role: role
-            },{
-                stepName: "requestToken"
-            });
-        })
-        .then((followUpResponse) => {
-            res.cookie('token', followUpResponse.data.token, {
-                httpOnly: true, // Prevent access by JavaScript
-                secure: false,   // Ensures the cookie is only sent over HTTPS //TODO FIX IN LIVE VERSION
-                sameSite: 'lax', // Protects against CSRF (set to 'Lax' or 'Strict' as needed) //TODO FIX IN LIVE VERSION
-                maxAge: 3600000    // Optional: Set cookie expiration (in milliseconds)
-            });
-            return res.status(200).send({
-                message: "Account registered successfully.",
-            });
-        })
-        .catch(error => {
-            return errorHandler(req, res, error);
+    try {
+        const registrationResponse = await axios.post(`http://${usersDB}/register`, {
+            username: username,
+            password: password,
+            email: email,
+        }, {
+            stepName : "registerUser"
         });
+        console.log("User named: >" + username + "< has been registered.");
+
+        let role;
+        if (registrationResponse.data.permissionLevel === 2) {
+            role = "student";
+        } else if (registrationResponse.data.permissionLevel === 3) {
+            role = "admin";
+        } else {
+            role = "viewer";
+        }
+
+        const tokenResponse = await axios.post(`http://${tokenPort}`, {
+            username: username,
+            role: role
+        },{
+            stepName: "requestToken"
+        });
+
+        res.cookie('token', tokenResponse.data.token, {
+            httpOnly: true,
+            secure: false,   // TODO FIX IN LIVE VERSION
+            sameSite: 'lax', // TODO FIX IN LIVE VERSION
+            maxAge: 3600000
+        });
+
+        return res.status(200).send({
+            message: "Account registered successfully.",
+        });
+
+    } catch (error) {
+        return errorHandler(req, res, error);
+    }
 }
