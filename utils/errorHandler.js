@@ -54,5 +54,6 @@ export default function errorHandler(req, res, error, action) {
     }
 
     // handle unkown/undocumented errors
+    console.log(error);
     return res.status(500).send({message: "Unkown error occurred please try again later."});
 }
