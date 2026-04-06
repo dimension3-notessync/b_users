@@ -2,6 +2,7 @@
 import express from 'express';
 import { rateLimit } from 'express-rate-limit'
 import cookieParser from 'cookie-parser'
+import cors from 'cors';
 
 import createHandler from "./routes/POST.js";
 import deleteHandler from "./routes/DELETE.js";
@@ -14,6 +15,7 @@ const port = process.env.PORT || "undefined";
 const usersDB = process.env.USERS_DB_PORT || "undefined";
 const subscriptionsDB = process.env.SUBSCRIPTIONS_DB_PORT || "undefined";
 const tokenPort = process.env.TOKEN_PORT || "undefined";
+const environment = process.env.NODE_ENV || "development";
 
 if (port === "undefined") {
     console.error("Critical Error: Missing PORT environment variable. Please set it.");
@@ -45,6 +47,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(limiter);
 const router = express.Router();
+
+if (environment === 'development') {
+    app.use(cors({
+        origin: 'http://localhost:5173', // Allow requests from your frontend
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Specify allowed methods
+        credentials: true, // Allow cookies to be sent
+    }));
+}
 
 
 // create user
@@ -99,7 +109,6 @@ router.get('/password-reset/change/:token', async (req, res) => {
 router.put('/password-reset/change/:token', async (req, res) => {
     return res.status(404).send('We are sorry, this feature has not been implemented yet.');
 })
-
 
 app.use('/', router);
 
