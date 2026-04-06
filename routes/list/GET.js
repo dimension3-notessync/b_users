@@ -15,11 +15,11 @@ export default async function listHandler(req, res, tokenPort, usersDB) {
             stepName: "adminCheck"
         });
 
-        const usersDBresponse = await axios.get(`http://${usersDB}/all`, {
+        const usersDBResponse = await axios.get(`http://${usersDB}/all`, {
             stepName: "requestAllUsers"
         });
 
-        return res.status(200).send({ users: usersDBresponse.data.data });
+        return res.status(200).send({ users: usersDBResponse.data.data });
 
     } catch (error) {
         return errorHandler(req, res, error);

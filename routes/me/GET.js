@@ -21,14 +21,14 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
         }, {
             stepName: "requestUserInformation"
         })
-        email = usersDBresponse.data.email;
-
-        const subscriptionsDBresponse = axios.get(`http://${subscriptionsDB}/user/${usersDBresponse.data.id}`, {
-            stepName : "requestSubscriptionsOfUser"
-        })
+        email = usersDBResponse.data.userInformation.email;
         permissionLevel = usersDBResponse.data.userInformation.permissionLevel;
 
-        return res.status(200).send({ username: username, email: email, permissionLevel, subscriptions: subscriptionsDBresponse.data});
+        const subscriptionsDBResponse = await axios.get(`http://${subscriptionsDB}/user/${usersDBResponse.data.id}`, {
+            stepName: "requestSubscriptionsOfUser"
+        })
+
+        return res.status(200).send({ username: username, email: email, permissionLevel, subscriptions: subscriptionsDBResponse.data});
     } catch(error) {
         return errorHandler(req, res, error);
     }
