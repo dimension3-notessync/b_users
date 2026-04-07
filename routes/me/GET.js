@@ -27,8 +27,50 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
         const subscriptionsDBResponse = await axios.get(`http://${subscriptionsDB}/user/${usersDBResponse.data.userInformation.id}`, {
             stepName: "requestSubscriptionsOfUser"
         })
+        const subscriptionsData = subscriptionsDBResponse.data.subscriptions; // Access the array directly
+        const authorUsernames = [];
+        let lecturesSubscription = false;
+        const usernamePromises = subscriptionsData.map(async (subscription) => {
+            // Check if it's an author subscription (not lectures and author is not -1)
+            if (subscription.lectures === false && subscription.authorID !== -1) {
+                try {
+                    // Assuming usersDB expects { id: authorId } for fetching by ID
+                    const authorInfoResponse = await axios.post(`http://${usersDB}/user`, {
+                        userid: subscription.authorID
+                    }, {
+                        stepName: `requestAuthorInformationForSubscription`
+                    });
+                    return {
+                        username: authorInfoResponse.data.userInformation.username
+                    };
+                } catch (authorError) {
+                    // Log or handle error if an author's info can't be fetched
+                    console.error(`Failed to fetch username for author ID ${subscription.authorID}:`, authorError.message);
+                    return {
+                        username: "Unknown User (Error)"
+                    };
+                }
+            }
+            if (subscription.lectures === true) {
+                lecturesSubscription = true;
+            }
+            return null; // For calendar subscriptions or invalid author IDs
+        });
 
-        return res.status(200).send({ username: username, email: email, permissionLevel, subscriptions: subscriptionsDBResponse.data});
+        const fetchedAuthorDetails = await Promise.all(usernamePromises);
+        fetchedAuthorDetails.forEach(detail => {
+            if (detail) {
+                authorUsernames.push(detail);
+            }
+        });
+
+        return res.status(200).send({
+            username: username,
+            email: email,
+            permissionLevel,
+            lecturesSubscription: lecturesSubscription,
+            subscribedAuthors: authorUsernames // New list of subscribed authors with their usernames
+        });
     } catch(error) {
         return errorHandler(req, res, error);
     }
