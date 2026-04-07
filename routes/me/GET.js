@@ -23,6 +23,15 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
         })
         email = usersDBResponse.data.userInformation.email;
         permissionLevel = usersDBResponse.data.userInformation.permissionLevel;
+        if (permissionLevel === 1) {
+            permissionLevel = 'viewer';
+        }
+        if (permissionLevel === 2) {
+            permissionLevel = 'student';
+        }
+        if (permissionLevel === 3) {
+            permissionLevel = 'admin';
+        }
 
         const subscriptionsDBResponse = await axios.get(`http://${subscriptionsDB}/user/${usersDBResponse.data.userInformation.id}`, {
             stepName: "requestSubscriptionsOfUser"
