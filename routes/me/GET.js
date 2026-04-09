@@ -50,12 +50,15 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
                         stepName: `requestAuthorInformationForSubscription`
                     });
                     return {
+                        // MODIFICATION HERE: Include both userid and username
+                        userid: subscription.authorID,
                         username: authorInfoResponse.data.userInformation.username
                     };
                 } catch (authorError) {
                     // Log or handle error if an author's info can't be fetched
                     console.error(`Failed to fetch username for author ID ${subscription.authorID}:`, authorError.message);
                     return {
+                        userid: subscription.authorID, // Still include ID even if username failed
                         username: "Unknown User (Error)"
                     };
                 }
@@ -68,7 +71,7 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
 
         const fetchedAuthorDetails = await Promise.all(usernamePromises);
         fetchedAuthorDetails.forEach(detail => {
-            if (detail) {
+            if (detail) { // Only push if it's not null (e.g., from a lecture subscription)
                 authorUsernames.push(detail);
             }
         });
@@ -78,7 +81,7 @@ export default async function profileHandler(req, res, usersDB, tokenPort, subsc
             email: email,
             permissionLevel,
             lecturesSubscription: lecturesSubscription,
-            subscribedAuthors: authorUsernames // New list of subscribed authors with their usernames
+            subscribedAuthors: authorUsernames // New list of subscribed authors with their usernames and user IDs
         });
     } catch(error) {
         return errorHandler(req, res, error);
