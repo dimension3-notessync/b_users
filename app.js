@@ -16,6 +16,7 @@ const usersDB = process.env.USERS_DB_PORT || "undefined";
 const subscriptionsDB = process.env.SUBSCRIPTIONS_DB_PORT || "undefined";
 const tokenPort = process.env.TOKEN_PORT || "undefined";
 const environment = process.env.NODE_ENV || "development";
+const start = Date.now();
 
 if (port === "undefined") {
     console.error("Critical Error: Missing PORT environment variable. Please set it.");
@@ -109,6 +110,16 @@ router.get('/password-reset/change/:token', async (req, res) => {
 router.put('/password-reset/change/:token', async (req, res) => {
     return res.status(404).send('We are sorry, this feature has not been implemented yet.');
 })
+
+router.get('/health', async (req, res) => {
+    const uptime = Date.now() - start;
+    try {
+        return res.status(200).send({message: 'b_users is healthy and connected to DB', uptime: uptime});
+    } catch (error) {
+        console.error('b_users health check failed:', error);
+        return res.status(500).send('b_users is unhealthy');
+    }
+});
 
 app.use('/', router);
 
