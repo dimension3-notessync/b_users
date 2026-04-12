@@ -114,7 +114,7 @@ router.put('/password-reset/change/:token', async (req, res) => {
 router.get('/health', async (req, res) => {
     const uptime = Date.now() - start;
     try {
-        return res.status(200).send({message: 'b_users is healthy and connected to DB', uptime: uptime});
+        return res.status(200).send({message: 'b_users is healthy', uptime: uptime});
     } catch (error) {
         console.error('b_users health check failed:', error);
         return res.status(500).send('b_users is unhealthy');
