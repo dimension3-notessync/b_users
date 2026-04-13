@@ -77,8 +77,8 @@ export default async function createHandler(req, res, usersDB, tokenPort) {
 
         res.cookie('token', tokenResponse.data.token, {
             httpOnly: true,
-            secure: false,   // TODO FIX IN LIVE VERSION
-            sameSite: 'lax', // TODO FIX IN LIVE VERSION
+            secure: true,
+            sameSite: 'Strict',
             maxAge: 3600000
         });
 
